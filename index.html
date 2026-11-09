@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>krystal — Independent Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,200;0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0A0A;
+  --bg-2:#0E0E0E;
+  --ink:#EDEAE3;
+  --dim:#6E6C66;
+  --line:rgba(237,234,227,.14);
+  --green:#A2BD4E;
+  --pad:clamp(18px,3vw,48px);
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Inter Tight","Helvetica Neue",Helvetica,Arial,"PingFang SC",sans-serif;
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;text-align:left}
+::selection{background:var(--green);color:#0A0A0A}
+
+.kicker{
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim);font-weight:400;
+}
+.kicker em{font-family:"Instrument Serif",serif;font-style:italic;letter-spacing:.02em;text-transform:none;font-size:12px;color:var(--dim)}
+
+/* ---------- grain ---------- */
+.grain{
+  position:fixed;inset:-50%;z-index:60;pointer-events:none;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grainShift 8s steps(6) infinite;
+}
+@keyframes grainShift{
+  0%{transform:translate(0,0)}20%{transform:translate(-2%,1%)}40%{transform:translate(1%,-2%)}
+  60%{transform:translate(-1%,2%)}80%{transform:translate(2%,1%)}100%{transform:translate(0,0)}
+}
+
+/* ---------- cursor ---------- */
+.cursor{position:fixed;top:0;left:0;width:7px;height:7px;border-radius:50%;
+  background:#fff;z-index:9999;pointer-events:none;mix-blend-mode:difference;
+  opacity:0;transition:opacity .3s;will-change:transform}
+.cursor.on{opacity:1}
+@media (hover:hover) and (pointer:fine){
+  .cursor-ready,.cursor-ready *{cursor:none!important}
+}
+
+/* ---------- topbar ---------- */
+.topbar{
+  position:absolute;top:0;left:0;right:0;z-index:20;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:var(--pad);
+  opacity:0;animation:fadeIn 1s var(--ease) .2s forwards;
+}
+.topbar .left{display:flex;flex-direction:column;gap:6px}
+.topbar .brand{font-size:12px;letter-spacing:.02em;color:var(--ink)}
+.topbar nav{display:flex;gap:clamp(14px,2.4vw,34px);font-size:12px;letter-spacing:.01em;color:var(--dim)}
+.topbar nav a{position:relative;transition:color .3s}
+.topbar nav a::after{content:"";position:absolute;left:0;bottom:-3px;width:100%;height:1px;background:var(--green);transform:scaleX(0);transform-origin:right;transition:transform .45s var(--ease)}
+.topbar nav a:hover{color:var(--ink)}
+.topbar nav a:hover::after{transform:scaleX(1);transform-origin:left}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;min-height:100svh;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:0 var(--pad) calc(var(--pad) + 66px);
+  overflow:hidden;
+}
+.hero-inner{
+  position:relative;z-index:3;
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  align-items:flex-end;gap:clamp(20px,4vw,60px);
+}
+.hero-copy{max-width:340px;padding-bottom:clamp(8px,1.4vw,20px)}
+.hero-copy .kicker{margin-bottom:clamp(14px,2vw,26px)}
+.lede{
+  color:var(--green);
+  font-size:clamp(12.5px,1.05vw,14px);
+  line-height:1.75;letter-spacing:.005em;
+  font-weight:300;
+}
+.status{
+  margin-top:clamp(18px,2.4vw,30px);
+  display:flex;align-items:center;gap:9px;
+  font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);
+}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex:none;
+  box-shadow:0 0 0 0 rgba(162,189,78,.45);animation:pulse 2.6s infinite}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(162,189,78,.4)}
+  70%{box-shadow:0 0 0 7px rgba(162,189,78,0)}
+  100%{box-shadow:0 0 0 0 rgba(162,189,78,0)}
+}
+
+.name{
+  font-size:clamp(58px,22vw,352px);
+  line-height:.76;
+  font-weight:300;
+  letter-spacing:-.055em;
+  text-align:right;
+  color:var(--ink);
+  white-space:nowrap;
+  margin-right:-.02em;
+}
+.name span{display:inline-block;opacity:0;transform:translateY(.28em);
+  animation:rise 1.2s var(--ease) forwards;animation-delay:calc(.35s + var(--i)*.055s)}
+@keyframes rise{to{opacity:1;transform:translateY(0)}}
+
+.hero-foot{
+  position:absolute;left:var(--pad);right:var(--pad);bottom:max(calc(var(--pad) - 22px),14px);
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+  z-index:3;opacity:0;animation:fadeIn 1s var(--ease) 1.1s forwards;
+}
+.hero-foot .scroll{display:flex;align-items:center;gap:10px}
+.hero-foot .arrow{display:inline-block;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+
+/* ---------- trail ---------- */
+.trail{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.trail figure{
+  position:absolute;top:0;left:0;
+  width:clamp(140px,16.5vw,255px);height:clamp(180px,21vw,325px);
+  opacity:0;overflow:hidden;
+  transition:opacity .55s ease, transform .85s var(--ease);
+  will-change:transform,opacity;
+}
+.trail figure img{width:100%;height:100%;object-fit:cover;filter:contrast(1.02) saturate(.94)}
+.trail figure:nth-child(even){width:clamp(120px,13.5vw,205px);height:clamp(150px,17vw,258px)}
+
+/* ---------- work ---------- */
+.work{position:relative;z-index:3;background:var(--bg);padding-bottom:clamp(60px,10vw,140px)}
+.sec-head{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
+  padding:0 var(--pad) clamp(22px,3vw,38px);
+  border-top:1px solid var(--line);
+  padding-top:clamp(18px,2.4vw,26px);
+}
+.sec-head h2{
+  font-size:clamp(22px,3.1vw,42px);font-weight:300;letter-spacing:-.03em;line-height:1;
+  margin-top:clamp(10px,1.6vw,18px);
+}
+.sec-head h2 em{font-family:"Instrument Serif",serif;font-style:italic;letter-spacing:-.01em}
+.sec-note{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);text-align:right;line-height:1.9}
+
+.masonry{
+  column-count:4;column-gap:3px;
+  font-size:0;
+}
+.tile{
+  display:block;width:100%;margin:0 0 3px;position:relative;overflow:hidden;
+  background:#141414;break-inside:avoid;
+  opacity:0;transform:translateY(26px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease);
+}
+.tile.is-in{opacity:1;transform:none}
+.tile .thumb{position:relative;width:100%;overflow:hidden;background:#141414}
+.tile img{
+  width:100%;height:100%;object-fit:cover;
+  transform:scale(1.001);
+  transition:transform 1.1s var(--ease),filter .6s ease;
+  filter:brightness(.92) saturate(.96);
+}
+.tile:hover img{transform:scale(1.045);filter:brightness(1) saturate(1)}
+.tile-cap{
+  position:absolute;inset:auto 0 0 0;z-index:2;
+  display:flex;flex-direction:column;gap:5px;
+  padding:clamp(12px,1.6vw,20px);
+  background:linear-gradient(to top,rgba(6,6,6,.72),rgba(6,6,6,0));
+  opacity:0;transform:translateY(8px);
+  transition:opacity .45s ease,transform .45s var(--ease);
+}
+.tile:hover .tile-cap{opacity:1;transform:none}
+.t-cap-name{font-size:14px;letter-spacing:-.01em;color:#fff}
+.t-cap-meta{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green)}
+.tile .idx{
+  position:absolute;top:clamp(10px,1.2vw,16px);right:clamp(10px,1.2vw,16px);
+  font-size:9.5px;letter-spacing:.12em;color:rgba(255,255,255,.65);
+  mix-blend-mode:difference;opacity:0;transition:opacity .4s;
+}
+.tile:hover .idx{opacity:1}
+
+/* ---------- footer ---------- */
+footer{
+  padding:clamp(50px,7vw,110px) var(--pad) clamp(20px,2.4vw,30px);
+  border-top:1px solid var(--line);
+  display:flex;flex-direction:column;gap:clamp(50px,7vw,90px);
+}
+.foot-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,80px);align-items:start}
+.foot-grid p.bio{font-size:clamp(13px,1.1vw,15px);line-height:1.7;color:#B9B6AE;max-width:44ch;margin-top:18px}
+.mail{
+  display:inline-block;font-size:clamp(24px,4.4vw,58px);letter-spacing:-.04em;line-height:1.05;
+  padding-bottom:6px;position:relative;
+}
+.mail::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:var(--ink);
+  transform:scaleX(0);transform-origin:right;transition:transform .55s var(--ease)}
+.mail:hover::after{transform:scaleX(1);transform-origin:left}
+.mail:hover{color:var(--green)}
+.foot-bottom{display:flex;justify-content:space-between;gap:20px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+
+/* ---------- story overlay ---------- */
+.story{
+  position:fixed;inset:0;z-index:80;
+  background:var(--bg);
+  visibility:hidden;pointer-events:none;
+  clip-path:inset(100% 0 0 0);
+  transition:clip-path .85s var(--ease),visibility .85s;
+}
+.story.open{clip-path:inset(0 0 0 0);visibility:visible;pointer-events:auto}
+.story-scroll{height:100%;overflow-y:auto;overscroll-behavior:contain}
+.story-close{
+  position:fixed;top:0;right:0;z-index:3;
+  padding:var(--pad);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);
+  display:flex;align-items:center;gap:8px;
+  mix-blend-mode:difference;
+}
+.story-close span{display:inline-block;transition:transform .5s var(--ease)}
+.story-close:hover span{transform:rotate(90deg)}
+.story-close:hover{color:var(--green)}
+
+.story-inner{padding:calc(var(--pad) + 26px) var(--pad) clamp(60px,9vw,130px);max-width:1500px;margin:0 auto}
+.story-head{display:grid;grid-template-columns:1.35fr .65fr;gap:clamp(20px,4vw,70px);align-items:end;
+  padding-bottom:clamp(22px,3vw,38px)}
+.story-title{font-size:clamp(40px,8.2vw,132px);font-weight:300;letter-spacing:-.05em;line-height:.86;margin-top:clamp(14px,2vw,24px)}
+.story-meta{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:11px;letter-spacing:.02em;
+  border-top:1px solid var(--line);padding-top:14px}
+.story-meta dt{color:var(--dim);text-transform:uppercase;letter-spacing:.1em;font-size:9.5px;padding-top:2px}
+.story-meta dd{color:#C9C6BE}
+.story-fig{margin:clamp(20px,3vw,40px) 0 clamp(28px,4vw,56px);overflow:hidden;background:#131313}
+.story-fig img{width:100%;height:clamp(240px,48vw,680px);object-fit:cover;filter:brightness(.95)}
+.story-body{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,70px);max-width:1150px}
+.story-body p{font-size:clamp(13px,1.05vw,15px);line-height:1.85;color:#9E9B93;font-weight:300}
+.story-body p.first{color:#DDDAD2}
+.story-tag{margin-top:clamp(34px,5vw,60px);display:flex;gap:10px;flex-wrap:wrap}
+.story-tag span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+  border:1px solid var(--line);padding:7px 12px}
+
+/* ---------- reveal util ---------- */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.reveal.is-in{opacity:1;transform:none}
+@keyframes fadeIn{to{opacity:1}}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){
+  .masonry{column-count:2;column-gap:2px}
+  .tile{margin-bottom:2px}
+}
+@media (max-width:820px){
+  .masonry{column-count:2;column-gap:2px}
+  .tile{margin-bottom:2px}
+  .hero-inner{grid-template-columns:1fr;gap:clamp(30px,7vw,50px)}
+  .hero-copy{max-width:none;padding-bottom:0;order:2}
+  .name{text-align:left;font-size:clamp(64px,33vw,190px);order:1}
+  .hero{padding-bottom:calc(var(--pad) + 58px)}
+  .story-head{grid-template-columns:1fr}
+  .story-body{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr}
+  .topbar nav{display:none}
+  .hero-foot{font-size:9px;letter-spacing:.09em}
+  .hero-foot .scroll{gap:6px}
+  .hero-foot span:nth-child(2){display:none}
+  .trail figure{width:120px;height:155px}
+  .trail figure:nth-child(even){width:100px;height:130px}
+}
+@media (max-width:560px){
+  .masonry{column-count:2}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:10px}
+  .sec-note{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="cursor" id="cursor"></div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+
+  <div class="topbar">
+    <div class="left">
+      <span class="brand">krystal<sup style="font-size:7px;letter-spacing:0">®</sup></span>
+      <span class="kicker">Portfolio — 2026</span>
+    </div>
+    <nav>
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="mailto:hello@krystal.design">Contact</a>
+    </nav>
+  </div>
+
+  <div class="trail" id="trail" aria-hidden="true">
+    <figure><img src="assets/img/p03.jpg" alt=""></figure>
+    <figure><img src="assets/img/p08.jpg" alt=""></figure>
+    <figure><img src="assets/img/p01.jpg" alt=""></figure>
+    <figure><img src="assets/img/p05.jpg" alt=""></figure>
+    <figure><img src="assets/img/p07.jpg" alt=""></figure>
+    <figure><img src="assets/img/p02.jpg" alt=""></figure>
+    <figure><img src="assets/img/p04.jpg" alt=""></figure>
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <p class="kicker">(Profile)</p>
+      <p class="lede">Independent designer working between brand and digital product. I take dense, complicated logic and reduce it to quiet interfaces — generous space, a strict grid, and one colour that misbehaves.</p>
+      <p class="status"><span class="dot"></span>Available for select projects</p>
+    </div>
+
+    <h1 class="name" aria-label="krystal">
+      <span style="--i:0">k</span><span style="--i:1">r</span><span style="--i:2">y</span><span style="--i:3">s</span><span style="--i:4">t</span><span style="--i:5">a</span><span style="--i:6">l</span>
+    </h1>
+  </div>
+
+  <div class="hero-foot">
+    <span class="scroll">Scroll to work <span class="arrow">↓</span></span>
+    <span>Qingdao — Seoul</span>
+    <span>01 / 03</span>
+  </div>
+</section>
+
+<!-- ============ WORK ============ -->
+<section class="work" id="work">
+  <div class="sec-head reveal">
+    <div>
+      <p class="kicker">(Selected Work)</p>
+      <h2>Eight projects, <em>quietly</em> made.</h2>
+    </div>
+    <p class="sec-note">2021 — 2026<br>Click to read the story</p>
+  </div>
+  <div class="masonry" id="masonry"></div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer id="about">
+  <div class="foot-grid reveal">
+    <div>
+      <p class="kicker">(About)</p>
+      <p class="bio">Five years of designing complex systems — dashboards, identity systems, editorial. I care about the parts nobody notices until they are wrong: spacing, hierarchy, the weight of a line. Currently taking on two projects for 2026.</p>
+    </div>
+    <div>
+      <p class="kicker" style="margin-bottom:22px">(Contact)</p>
+      <a class="mail" href="mailto:hello@krystal.design">hello@krystal.design</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 Krystal</span>
+    <span>Instagram / Are.na / Read.cv</span>
+    <span>Design &amp; build — K</span>
+  </div>
+</footer>
+
+<!-- ============ STORY ============ -->
+<div class="story" id="story" aria-hidden="true">
+  <button class="story-close" id="storyClose">Close <span>✕</span></button>
+  <div class="story-scroll" id="storyScroll">
+    <div class="story-inner">
+      <div class="story-head">
+        <div>
+          <p class="kicker">(Project Story)</p>
+          <h2 class="story-title" id="sTitle"></h2>
+        </div>
+        <dl class="story-meta" id="sMeta"></dl>
+      </div>
+      <figure class="story-fig"><img id="sImg" src="" alt=""></figure>
+      <div class="story-body" id="sBody"></div>
+      <div class="story-tag" id="sTags"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ data ============ */
+const projects = [
+  {
+    name:"MONO", cat:"Brand Identity", year:"2025", client:"Mono Type Foundry", role:"Identity / Art Direction",
+    img:"assets/img/p03.jpg", ratio:"4 / 5",
+    body:[
+      "A type foundry asked for an identity that could disappear behind its own typefaces. The obvious move — a big logo — would have competed with the product. So we removed the logo entirely and made the grid the brand: a fixed baseline, a fixed margin, and nothing else.",
+      "The only variable allowed was ink density. Every application starts at 100% black and loses weight as the format gets smaller, so a poster reads as a solid field and a business card as a whisper. It looks like restraint. It is actually a system of tolerances."
+    ],
+    tags:["Identity","Type","Print"]
+  },
+  {
+    name:"HALO", cat:"Packaging", year:"2024", client:"Halo Skincare", role:"Structural / Graphic Design",
+    img:"assets/img/p08.jpg", ratio:"3 / 4",
+    body:[
+      "Halo ships a single product in six sizes. The brief was sustainability, which usually means brown cardboard and apologies. We kept the matte black and replaced the plastic insert with a folded paper cradle that holds every size with the same two folds.",
+      "One grass-green band wraps the box and doubles as the tamper seal — the only colour in the whole system, and the only thing you touch before opening. Production cost went down 18%. The unboxing got quieter, not louder."
+    ],
+    tags:["Packaging","Structure","Sustainability"]
+  },
+  {
+    name:"CONCRETE", cat:"Spatial & Signage", year:"2024", client:"Concrete Art Centre", role:"Wayfinding / Environmental",
+    img:"assets/img/p01.jpg", ratio:"10 / 19",
+    body:[
+      "A former car park turned art centre, with a floor plan that refuses to be learned. Visitors got lost before they got to the first room. The building's own grid — that relentless concrete window module — became the map.",
+      "Signage sits only on structural columns, never on walls, so every number is a coordinate rather than a decoration. Type is set at the exact height of the column joints. Nobody notices why they can find things now. That is the point."
+    ],
+    tags:["Wayfinding","Environmental","Type"]
+  },
+  {
+    name:"FOLIO", cat:"Editorial", year:"2023", client:"Folio Quarterly", role:"Editorial Design",
+    img:"assets/img/p05.jpg", ratio:"3 / 2",
+    body:[
+      "Folio publishes long essays about design and refuses to run images. Twelve issues in, the format had become a wall of grey. The redesign kept the words and gave the page a pulse: one full-bleed colour spread every forty pages, always at the moment the argument turns.",
+      "The colour is never decorative. It marks the hinge of the essay — the place where the writer changes their mind. Readers started treating those spreads as bookmarks. Subscription renewals went up 24% in the first year."
+    ],
+    tags:["Editorial","Grid","Print"]
+  },
+  {
+    name:"STATION", cat:"Identity System", year:"2023", client:"Station Architects", role:"Identity / Web",
+    img:"assets/img/p04.jpg", ratio:"3 / 2",
+    body:[
+      "Architects present drawings before buildings exist, so their identity has to carry the confidence of the finished thing. Station had twelve years of work and no consistent way to show it.",
+      "We built a template system around a single hairline rule: every project starts with one line at the top of a page, at a fixed distance from the edge. Photographs sit under it, drawings above. The stationery, the website and the submission documents all obey the same line, which means the studio can hand the system to an intern without it falling apart."
+    ],
+    tags:["Identity","System","Web"]
+  },
+  {
+    name:"GREEN ROOM", cat:"Exhibition", year:"2022", client:"Green Room Collective", role:"Exhibition Design",
+    img:"assets/img/p06.jpg", ratio:"10 / 19",
+    body:[
+      "An exhibition about attention, held in a room with no natural light and a very low ceiling. The curators wanted screens. We argued for darkness and one colour instead.",
+      "Glyphs were printed in a green that only reads properly under the gallery's dim lighting — legible up close, almost a glow from across the room. Visitors moved through the space slowly without being told to. The room did the work."
+    ],
+    tags:["Exhibition","Light","Type"]
+  },
+  {
+    name:"MINUS", cat:"Product / UI", year:"2022", client:"Minus (fintech)", role:"Product Design / Design System",
+    img:"assets/img/p07.jpg", ratio:"4 / 5",
+    body:[
+      "Minus is a spending app for people who do not want to look at their spending. The product team had built 46 screens; the average session was nine seconds. Both numbers were the real brief.",
+      "We cut the app to three states — balance, one recent transaction, and a single action. Everything else moved behind a deliberate press-and-hold, which sounds hostile until you realise it filtered out almost every casual open. Session length went up, anxiety went down. Some features are better removed than redesigned."
+    ],
+    tags:["Product","UI","Design System"]
+  },
+  {
+    name:"SPECIMEN", cat:"Typography", year:"2021", client:"Self-initiated", role:"Type / Print / Research",
+    img:"assets/img/p02.jpg", ratio:"3 / 4",
+    body:[
+      "A self-published specimen for a grotesque that was never released. The typeface had one oddity — an almost imperceptible flat spot on the curves — that only appeared at display sizes.",
+      "The book is printed white on black so the ink spread eats the counters, then repeated in black on white where it doesn't. Same letters, two different typefaces. 300 copies, letterpress cover, sold out in a month. It taught me more about drawing type than any amount of theory."
+    ],
+    tags:["Typography","Print","Research"]
+  }
+];
+
+/* ============ render grid ============ */
+const masonry = document.getElementById('masonry');
+projects.forEach((p, i) => {
+  const b = document.createElement('button');
+  b.className = 'tile';
+  b.setAttribute('aria-label', p.name + ' — ' + p.cat);
+  b.innerHTML = `
+    <div class="thumb" style="aspect-ratio:${p.ratio}">
+      <img src="${p.img}" alt="${p.name} — ${p.cat}" loading="lazy">
+      <span class="idx">${String(i+1).padStart(2,'0')}</span>
+      <span class="tile-cap">
+        <span class="t-cap-name">${p.name}</span>
+        <span class="t-cap-meta">${p.cat} — ${p.year}</span>
+      </span>
+    </div>`;
+  b.addEventListener('click', () => openStory(i));
+  masonry.appendChild(b);
+});
+
+/* ============ reveal ============ */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e, k) => {
+    if (e.isIntersecting) {
+      const d = e.target.classList.contains('tile') ? (Array.from(masonry.children).indexOf(e.target) % 4) * 90 : 0;
+      setTimeout(() => e.target.classList.add('is-in'), d);
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+document.querySelectorAll('.tile, .reveal').forEach(el => io.observe(el));
+
+/* ============ story overlay ============ */
+const story = document.getElementById('story');
+const sScroll = document.getElementById('storyScroll');
+function openStory(i){
+  const p = projects[i];
+  document.getElementById('sTitle').textContent = p.name;
+  document.getElementById('sImg').src = p.img;
+  document.getElementById('sImg').alt = p.name;
+  document.getElementById('sMeta').innerHTML =
+    `<dt>Year</dt><dd>${p.year}</dd>
+     <dt>Client</dt><dd>${p.client}</dd>
+     <dt>Role</dt><dd>${p.role}</dd>
+     <dt>Index</dt><dd>${String(i+1).padStart(2,'0')} / 08</dd>`;
+  document.getElementById('sBody').innerHTML = p.body
+    .map((t, k) => `<p class="${k === 0 ? 'first' : ''}">${t}</p>`).join('');
+  document.getElementById('sTags').innerHTML = p.tags.map(t => `<span>${t}</span>`).join('');
+  story.classList.add('open');
+  story.setAttribute('aria-hidden','false');
+  sScroll.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+function closeStory(){
+  story.classList.remove('open');
+  story.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+document.getElementById('storyClose').addEventListener('click', closeStory);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeStory(); });
+
+/* ============ mouse-follow image trail ============ */
+const trail = Array.from(document.querySelectorAll('#trail figure'));
+let mx = innerWidth/2, my = innerHeight/2, lx = mx, ly = my, acc = 0, ti = 0;
+const THRESH = 132;
+const stamp = (x, y) => {
+  const el = trail[ti++ % trail.length];
+  clearTimeout(el._t);
+  const ox = (Math.random() - .5) * 150;
+  const oy = (Math.random() - .5) * 140;
+  const rot = (Math.random() - .5) * 9;
+  el.style.transition = 'none';
+  el.style.transform = `translate(${x + ox}px,${y + oy}px) translate(-50%,-50%) rotate(${rot}deg) scale(.88)`;
+  el.style.opacity = '1';
+  requestAnimationFrame(() => {
+    el.style.transition = '';
+    el.style.transform = `translate(${x + ox}px,${y + oy}px) translate(-50%,-50%) rotate(0deg) scale(1)`;
+  });
+  el._t = setTimeout(() => { el.style.opacity = '0'; }, 820);
+};
+addEventListener('pointermove', e => {
+  mx = e.clientX; my = e.clientY;
+  acc += Math.hypot(mx - lx, my - ly);
+  lx = mx; ly = my;
+  if (acc > THRESH) { acc = 0; stamp(mx, my); }
+}, { passive: true });
+
+/* touch devices: gentle auto sequence */
+if (matchMedia('(pointer:coarse)').matches) {
+  setTimeout(() => {
+    let n = 0;
+    setInterval(() => {
+      stamp(innerWidth * (n % 2 ? .68 : .34), innerHeight * .46);
+      n++;
+    }, 2000);
+  }, 800);
+}
+
+/* ============ cursor ============ */
+const cur = document.getElementById('cursor');
+if (matchMedia('(hover:hover) and (pointer:fine)').matches) {
+  document.documentElement.classList.add('cursor-ready');
+  let cx = mx, cy = my, cScale = 1, tScale = 1;
+  addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+  addEventListener('mouseover', e => {
+    tScale = e.target.closest('a,button,.tile') ? 4.6 : 1;
+  });
+  (function loop() {
+    cx += (mx - cx) * .2; cy += (my - cy) * .2;
+    cScale += (tScale - cScale) * .16;
+    cur.style.transform = `translate(${cx}px,${cy}px) translate(-50%,-50%) scale(${cScale})`;
+    requestAnimationFrame(loop);
+  })();
+  addEventListener('pointerenter', () => cur.classList.add('on'));
+  addEventListener('pointerleave', () => cur.classList.remove('on'));
+  document.addEventListener('mouseenter', () => cur.classList.add('on'));
+  cur.classList.add('on');
+}
+
+/* ============ subtle hero parallax ============ */
+const nameEl = document.querySelector('.name');
+const copyEl = document.querySelector('.hero-copy');
+const isSmall = () => matchMedia('(max-width:820px)').matches;
+let raf = null;
+addEventListener('scroll', () => {
+  if (raf) return;
+  raf = requestAnimationFrame(() => {
+    const y = scrollY;
+    if (y < innerHeight && !isSmall()) {
+      nameEl.style.transform = `translateY(${Math.min(y * -.06, 40)}px)`;
+      copyEl.style.transform = `translateY(${Math.min(y * .1, 26)}px)`;
+    } else if (isSmall()) {
+      nameEl.style.transform = '';
+      copyEl.style.transform = '';
+    }
+    raf = null;
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
